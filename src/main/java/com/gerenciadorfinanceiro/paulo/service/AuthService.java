@@ -20,7 +20,7 @@ public class AuthService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-
+    private final CategoriaService categoriaService;
 
     @Transactional
     public UsuarioResponse cadastrar(CadastroRequest req) {
@@ -36,7 +36,10 @@ public class AuthService {
                 .senha(passwordEncoder.encode(req.senha()))
                 .build();
 
-        return UsuarioResponse.de(usuarioRepository.save(usuario));
+        Usuario salvo = usuarioRepository.save(usuario);
+        categoriaService.criarPadroes(salvo.getId());
+
+        return UsuarioResponse.de(salvo);
     }
 
     @Transactional(readOnly = true)
